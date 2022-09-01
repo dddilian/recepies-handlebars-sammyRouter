@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./assets/CSS/reset.css">
+    <link rel="stylesheet" href="./assets/CSS/style.css">
+
+    <title>Test 2 with Handlebars</title>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+
+        <div id="mainContainer">
+            <!--! тук се рендерира съдържанието -->
+
+
+        </div>
+
+
+        <!-- footer -->
+        <footer>
+            <p>Website created by: Krasimir Stoev.</p>
+            <p>All rights reserved &copy; 2022</p>
+        </footer>
+
+    </div>
+
+    <!--! header template -->
+    <script type="text/x-handlebars-template" id="header-template">
+
+        <header>
+
+            <img id="logo" src="./assets/images/logo.png" alt="logo">
+        
+            <nav id="nav">
+                <ul id="navUl">
+                    <li class="navLi"><a class="navA" rel="noopener noreferrer" href="#allRecepies">Всички рецепти</a>
+                    </li>
+                    {{#if user}}
+                    <li class="navLi"><a class="navA" rel="noopener noreferrer" href="#favRecepies">Любими рецепти</a>
+                    </li>
+                    <li class="navLi"><a class="navA" rel="noopener noreferrer" href="#createRecepie">Създай рецепта</a>
+                    </li>
+                    <li class="navLi"><a class="navA" rel="noopener noreferrer" href="#myProfile">Моят Профил</a></li>
+                    {{/if}}
+                </ul>
+            </nav>
+        
+            <div id="logoutLoginRegister">
+                {{#if user}}
+                <span>Hi, {{user.username}}.</span>
+                <a href="#logout" onclick="onLogout(event)">Logout</a>
+                {{else}}
+                <a href="#login">Login</a>
+                <a href="#register">Register</a>
+                {{/if}}
+
+                {{#if user}}
+                <img id="profilePic" src={{user.img}} alt="profilePic">
+                {{else}}
+                <img id="profilePic" src="./assets/images/guest.png" alt="profilePic">
+                {{/if}}
+            </div>
+        
+        
+        </header>
+
+        
+
+    </script>
+
+    <!--! all recepies template -->
+    <script type="text/x-handlebars-template" id="allRecepiesPage-template">
+
+        {{>header}}
+
+        {{>searchDiv}}
+
+        <div id="allRecepies">
+
+
+            {{#each recepies}}
+
+            {{>recepie}}
+
+            {{else}}
+            <div>No recepies</div>  
+            {{/each}}
+
+        </div>
+
+    </script>
+
+    <!--! favorite recepies template -->
+    <script type="text/x-handlebars-template" id="favoriteRecepiesPage-template">
+
+        {{>header}}
+    
+            {{>searchDiv}}
+    
+            <div id="favRecepies" >
+    
+                {{#each favRecepies}}
+    
+                    {{>recepie}}
+    
+                {{else}}
+                <div>No recepies</div>
+                {{/each}}
+    
+            </div>
+    
+        </script>
+
+    <!--! search div partial template -->
+    <script type="text/x-handlebars-template" id="searchDiv-template">
+
+        <div id="searchDiv" >
+            <label for="selectEl">Filter by ingredient</label>
+            <select name="" id="selectEl" onchange="ingredientFiltering(event)">
+                {{#each ingredients}}
+                {{>ingredient}}
+                {{/each}}
+            </select>
+        
+            <label for="searchNameInput">Search by name</label>
+            <input type="text" id="searchNameInput" onkeyup="nameFiltering(event)">
+        </div>
+
+    </script>
+
+
+
+    <!--! register template -->
+    <script type="text/x-handlebars-template" id="registerPage-template">
+
+        {{>header}}
+
+        <div id="register">
+
+        <form id="registerForm" action="#" class="loginRegform" onsubmit="onRegisterSubmit(event)">
+    
+            <label for="regUsername">Username:</label>
+            <input id="regUsername" name="regUsername" type="text" placeholder="username">
+    
+            <label for="regPassword">Password:</label>
+            <input id="regPassword" name="regPassword" type="password" placeholder="password">
+    
+            <label for="regRePassword">Repeat password:</label>
+            <input id="regRePassword" name="regRePassword" type="password" placeholder="repeat password">
+
+            <label for="regAge">Age:</label>
+            <input type="number" id="regAge" name="regAge" placeholder="age">
+
+            <label for="regAddress">User address:</label>
+            <input type="text" id="regAddress" name="regAddress" placeholder="address">
+
+            <label for="regImage">Profile picture url:</label>
+            <input type="text" id="regImage" name="regImage" placeholder="url">
+    
+            <p id="regErrorP" class="error"></p>
+    
+            <input id="registerBtn" type="submit" value="Register">
+            <a class="goTo" href="#login">You have an account? Go to login page.</a>
+        </form>
+
+    </div>
+
+    </script>
+
+
+    <!--! login template -->
+    <script type="text/x-handlebars-template" id="loginPage-template">
+
+        {{>header}}
+
+        <div id="login">
+
+            <form id="loginForm" class="loginRegform" action="#" onsubmit="onLoginSubmit(event)">
+
+                <label for="loginUsername">Username:</label>
+                <input id="loginUsername" type="text" placeholder="username" name="loginUsername" value="">
+
+                <label for="loginPassword">Password:</label>
+                <input id="loginPassword" type="password" placeholder="password" name="loginPassword" value="">
+
+                <p id="loginErrorP" class="error">Wrong credentials</p>
+
+                <input id="loginBtn" type="submit" value="Login">
+                <a class="goTo" href="#register">You don't have an account. Go to register page.</a>
+
+            </form>
+
+        </div>
+    
+    </script>
+
+    <!--! create recepie template -->
+    <script type="text/x-handlebars-template" id="createRecepiePage-template">
+
+        {{>header}}
+
+        <div id="createRecepie">
+
+            <form id="createRecepieFrom" action="#" onsubmit="onCreateRecepieSubmit(event)">
+
+              <label for="newRecTitle">Recepie title:</label>
+              <input type="text" name="newRecTitle" id="newRecTitle" class="newRecInput">
+
+              <label for="linkToSimilarRec">Link to similar recepie:</label>
+              <input type="text" name="newRecLinkToSimilarRec" id="linkToSimilarRec" class="newRecInput">
+
+              <label for="newRecIngredients">Ingredients:</label>
+              <textarea name="newRecIngredients" id="newRecIngredients" cols="30" rows="10" class="newRecInput"
+                placeholder="Type the Ingredients here, separated by comma, otherwise you'll make me have to do more work...."></textarea>
+
+              <label for="newRecImgUrl">Recepie picture url:</label>
+              <input type="text" id="newRecImgUrl" name="newRecImgUrl" class="newRecInput">
+
+              <p id="createRecErrorP" class="error">All fields are required</p>
+
+              <input type="submit" id="addRecepieBtn" value="Add recepie">
+              <!-- <button type="submit" id="addRecepieBtn">Add recepie</button> -->
+
+           </form>
+
+        </div>
+
+    </script>
+
+
+    <!--! error page template -->
+    <script type="text/x-handlebars-template" id="errorPage-template">
+
+        {{>header}}
+
+        <div id="errorPage">
+
+            <img id="sadFaceImg" src="./assets/images/sadFace.png" alt="sadFace">
+            <h1 id="errorH1">Error 404</h1>
+            <h2 id="errorH2">Page not found</h2>
+            <h3 id="errorH3">Redirecting to home after <span id="timeEl"></span> seconds</h3>
+
+        </div>
+
+    </script>
+
+    <!--! profile page template -->
+    <script type="text/x-handlebars-template" id="profilePage-template">
+
+        {{>header}}
+        
+        <div id="myProfile">
+
+                <form action="#" id="changeUserInfoForm" onsubmit="onEditProfileSubmit(event)">
+
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" value={{user.username}}>
+
+                    <label for="userAge">Age:</label>
+                    <input type="number" id="userAge" name="age" value={{user.age}}>
+
+                    <label for="userAddress">User address:</label>
+                    <input type="text" id="userAddress" name="address" value={{user.address}}>
+
+                    <label for="userImage">Profile picture url:</label>
+                    <input type="text" id="userImage" name="userImage" value={{user.img}}>
+
+                    <p id="editProfileInfoErrorP" class="error">All fields are required</p>
+
+
+                    <input type="submit" id="profileSubmitBtn" value="Change info">
+                    <!-- <button id="profileSubmitBtn">Change info</button> -->
+
+                </form>
+
+            <div id="alertDiv">You have to fill all inputs!</div>
+
+            <table id="coockedRecepiesTable">
+                 <tr>
+                    <th>Recepie</th>
+                    <th>Times coocked</th>
+                </tr>
+
+                {{#each coockedRecepies}}
+                <tr>
+                    <td>{{this.title}}</td>
+                    <td class="timesCooked">{{this.timesCooked}}</td>
+                </tr>
+                {{/each}}
+                
+            </table>
+
+        </div>
+
+    </script>
+
+    <!--! recepie partial template -->
+    <script type="text/x-handlebars-template" id="recepie-template">
+
+        <div class="recepie" id="{{id}}">
+
+            <a class="recLink" href="{{href}}">
+                <img class="recImg" src="{{thumbnail}}" alt="">
+            </a>
+        
+            <h2 class="recTitle">{{title}}</h2>
+        
+            <p class="recIngredients">{{ingredients}}</p>
+    
+
+            <div class="recButtonsDiv">
+              
+               <button id="{{id}}" class="recBtn addFavBtn" data-id="{{id}}" onclick="addOrRemove(event)">
+                    {{#if isLiked}}
+                        Премахни от любими
+                    {{else}}
+                        Добави в любими
+                    {{/if}}
+               </button>
+
+                <button class="recBtn cookBtn" data-id="{{id}}" onclick="cookRecepie(event)">Сготви</button>
+                
+            </div>
+        
+        
+        </div>
+
+    </script>
+
+    <!--! ingredient partial template -->
+    <script type="text/x-handlebars-template" id="ingredient-template">
+        <option value="">{{this}}</option>
+    </script>
+
+
+    <script src="./node_modules/handlebars/dist/handlebars.min.js"></script>
+
+    <script src="./assets/js/data/users.js"></script>
+    <script src="./assets/js/data/recepies.js"></script>
+
+    <script src="./assets/js/models/User.js"></script>
+    <script src="./assets/js/models/Recepie.js"></script>
+
+    <script src="./assets/js/models/RecepiesManager.js"></script>
+    <script src="./assets/js/models/UserStorage.js"></script>
+    <script src="./assets/js/models/UserManager.js"></script>
+
+    <script src="./assets/js/router.js"></script>
+    <script src="./assets/js/inits.js"></script>
+
+
+</body>
+
+</html>
